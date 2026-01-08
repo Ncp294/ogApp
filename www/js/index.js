@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('deviceready', function() {
     // --- State Variables ---
     const og_devices_localStorage_name = 'og_devices_v1';
     let devlist = [];
@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let config_currdev = null;
     let tm_devices = null;
     let tm_currdev = null;
+    window.open = cordova.InAppBrowser.open;
 
     // --- DOM Element References ---
     const pages = document.querySelectorAll('.page');
@@ -175,8 +176,8 @@ document.addEventListener('DOMContentLoaded', function() {
         update_tr(0, devlist.length);
         if(selected >= devlist.length) selected = -1;
         if(selected > -1) {
-             const selectedRow = document.getElementById(`dev${selected}`);
-             if(selectedRow) selectedRow.classList.add('selected');
+            const selectedRow = document.getElementById(`dev${selected}`);
+            if(selectedRow) selectedRow.classList.add('selected');
         }
         updateControlButtons();
         update_lb_sel_msg();
@@ -346,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (config_currdev.type === 'blynk') {
             await new Promise(resolve => {
-                 connect_device(config_currdev, 'text',
+                connect_device(config_currdev, 'text',
                     (r) => { if (r === 'false') skip = true; resolve(); },
                     () => { skip = true; resolve(); },
                     -1, '/isHardwareConnected'
@@ -361,28 +362,28 @@ document.addEventListener('DOMContentLoaded', function() {
         if (skip) return;
 
         connect_device(config_currdev, 'JSON', (r) => {
-             let dirty = false;
-             let door = -1, car, dist, name;
-             if (config_currdev.type === 'blynk') {
-                 name = r.name;
-                 door = parseInt(find_virtual_pin_value(r, 0)) === 0 ? 0 : 1;
-                 dist = parseInt(find_virtual_pin_value(r, 3));
-                 car = parseInt(find_virtual_pin_value(r, 4)) === 0 ? 0 : 1;
-             } else {
-                 ({ door, vehicle: car, dist, name } = r);
-             }
+            let dirty = false;
+            let door = -1, car, dist, name;
+            if (config_currdev.type === 'blynk') {
+                name = r.name;
+                door = parseInt(find_virtual_pin_value(r, 0)) === 0 ? 0 : 1;
+                dist = parseInt(find_virtual_pin_value(r, 3));
+                car = parseInt(find_virtual_pin_value(r, 4)) === 0 ? 0 : 1;
+            } else {
+                ({ door, vehicle: car, dist, name } = r);
+            }
 
-             if (config_currdev.door != door) { config_currdev.door = door; dirty = true; }
-             if (config_currdev.car != car) { config_currdev.car = car; dirty = true; }
-             if (config_currdev.dist != dist) { config_currdev.dist = dist; dirty = true; }
-             if (config_currdev.name != name) { config_currdev.name = name; dirty = true; }
+            if (config_currdev.door != door) { config_currdev.door = door; dirty = true; }
+            if (config_currdev.car != car) { config_currdev.car = car; dirty = true; }
+            if (config_currdev.dist != dist) { config_currdev.dist = dist; dirty = true; }
+            if (config_currdev.name != name) { config_currdev.name = name; dirty = true; }
 
-             if (dirty) update_tr_currdev();
+            if (dirty) update_tr_currdev();
         }, () => {
-             if (config_currdev.door !== -1) {
-                 config_currdev.door = -1;
-                 update_tr_currdev();
-             }
+            if (config_currdev.door !== -1) {
+                config_currdev.door = -1;
+                update_tr_currdev();
+            }
         }, -1);
     };
 
