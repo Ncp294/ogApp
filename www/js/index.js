@@ -157,7 +157,10 @@ document.addEventListener('deviceready', function() {
             const r = document.createElement('tr');
             r.id = `dev${i}`;
             r.innerHTML = `
-                <td id="name${i}">${config.name}</td>
+                <td style="text-align: center" id="name${i}">
+                    <p id="text_name${i}">${config.name}</p>
+                    <img id="img${i}" src="img/PLACEHOLDERGarageIcon.png" alt="Garage Icon" style="width: 50px; height: 50px">
+                </td>
                 <td id="door${i}"></td>
                 <td id="car${i}"></td>
                 <td id="dist${i}"></td>
@@ -186,7 +189,7 @@ document.addEventListener('deviceready', function() {
     const update_tr = (start, n) => {
         for (let i = start; i < start + n; i++) {
             const d = devlist[i];
-            document.getElementById(`name${i}`).textContent = d.name;
+            document.getElementById(`text_name${i}`).textContent = d.name;
             if (d.door === -1) {
                 document.getElementById(`door${i}`).textContent = '(offline)';
                 document.getElementById(`car${i}`).textContent = '-';
