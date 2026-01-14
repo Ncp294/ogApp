@@ -159,7 +159,7 @@ document.addEventListener('deviceready', function() {
             r.innerHTML = `
                 <td style="text-align: center" id="name${i}">
                     <p id="text_name${i}">${config.name}</p>
-                    <img id="img${i}" src="img/PLACEHOLDERGarageIcon.png" alt="Garage Icon" style="width: 50px; height: 50px">
+                    <img id="img${i}" class="device-icon" src=${config.image || "img/PLACEHOLDERGarageIcon.png"} data-index="${i}" alt="Garage Icon" style="width: 50px; height: 50px">
                 </td>
                 <td id="door${i}"></td>
                 <td id="car${i}"></td>
@@ -175,6 +175,11 @@ document.addEventListener('deviceready', function() {
                 }
             });
             tbody.appendChild(r);
+
+            r.querySelector(`#img${i}`).addEventListener('click', (e) => {
+                e.stopPropagation();
+                update_image(i);
+            })
         });
         update_tr(0, devlist.length);
         if(selected >= devlist.length) selected = -1;
@@ -185,6 +190,40 @@ document.addEventListener('deviceready', function() {
         updateControlButtons();
         update_lb_sel_msg();
     };
+
+    const update_image = (index) => {
+        if (!navigator.camera) {
+            alert("Camera plugin not found");
+            return;
+        }
+
+        // get picture as base 64 string
+        navigator.camera.getPicture((imageData) => {
+            var image = document.getElementById(`img${index}`)
+
+            // Prepend header if cordova does not automatically
+            if (imageData.startsWith('data:image')) {
+                image.src = imageData;
+            } else {
+                image.src = "data:image/jpeg;base64," + imageData;
+            }
+
+            devlist[index].image = imageData;
+
+            localStorage.setItem('devlist', JSON.stringify(devlist));
+
+        }, (error) => {
+            console.log("Error or cancelled: " + error);
+
+        }, {
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+            targetWidth: 300,
+            targetHeight: 300
+        });
+        
+    }
 
     const update_tr = (start, n) => {
         for (let i = start; i < start + n; i++) {

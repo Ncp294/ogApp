@@ -14,6 +14,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^14.0.1",
+    "cordova-plugin-camera": "^8.0.0",
+    "cordova-plugin-file": "^8.1.3",
     "cordova-plugin-inappbrowser": "^6.0.0"
   },
   "cordova": {
@@ -21,7 +23,13 @@
       "android"
     ],
     "plugins": {
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-camera": {
+        "ANDROIDX_CORE_VERSION": "1.6.+"
+      },
+      "cordova-plugin-file": {
+        "ANDROIDX_WEBKIT_VERSION": "1.4.0"
+      }
     }
   }
 }
