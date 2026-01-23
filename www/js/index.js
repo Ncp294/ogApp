@@ -198,31 +198,57 @@ document.addEventListener('deviceready', function() {
         }
 
         // get picture as base 64 string
-        navigator.camera.getPicture((imageData) => {
-            var image = document.getElementById(`img${index}`)
+        navigator.camera.getPicture((originalURI) => {
 
-            // Prepend header if cordova does not automatically
-            if (imageData.startsWith('data:image')) {
-                image.src = imageData;
-            } else {
-                image.src = "data:image/jpeg;base64," + imageData;
-            }
-
-            devlist[index].image = imageData;
-
-            save_localStorage();
+            //crop image
+            plugins.crop((croppedURI) => {
+                convertUriToBase64(croppedURI, index)
+            }, (err) => {
+                console.error("Crop cancelled or failed", err);
+            }, originalURI, { quality: 50 });
 
         }, (error) => {
             console.log("Error or cancelled: " + error);
 
         }, {
             quality: 50,
-            destinationType: Camera.DestinationType.DATA_URL,
+            destinationType: Camera.DestinationType.FILE_URI,
+            allowEdit: false,
             sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
             targetWidth: 300,
             targetHeight: 300
         });
         
+    }
+
+    const convertUriToBase64 = (fileURI, index) => {
+        window.resolveLocalFileSystemURL(fileURI, function(fileEntry) {
+            fileEntry.file(function(file) {
+                var reader = new FileReader();
+
+                reader.onloadend = function() {
+                    var base64Result = this.result;
+                    
+                    //update element
+                    var image = document.getElementById(`img${index}`)
+                    image.src = base64Result;
+
+                    //update storage
+                    devlist[index].image = base64Result;
+                    save_localStorage();
+                };
+
+                reader.onerror = function(e) {
+                    console.error("FileReader Error:", e);
+                };
+
+                reader.readAsDataURL(file);
+            }, onError);
+        }, onError);
+    }
+
+    const onError = (err) => {
+        console.error("File System Error:", err);
     }
 
     const update_tr = (start, n) => {
