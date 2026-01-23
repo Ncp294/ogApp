@@ -210,7 +210,7 @@ document.addEventListener('deviceready', function() {
 
             devlist[index].image = imageData;
 
-            localStorage.setItem('devlist', JSON.stringify(devlist));
+            save_localStorage();
 
         }, (error) => {
             console.log("Error or cancelled: " + error);
